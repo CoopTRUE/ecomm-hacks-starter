@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "postinstall": "bun run prepare && prisma generate",
+    "postinstall": "bun run prepare && prisma generate && bun install --include=optional --force --os=linux --cpu=x64 sharp",
     "dev": "vite dev",
     "build": "vite build",
     "start": "bun run build/index.js",
