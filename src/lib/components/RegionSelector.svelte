@@ -4,9 +4,9 @@
   import { page } from '$app/state'
   import { Button } from '$lib/components/ui/button'
   import * as Tooltip from '$lib/components/ui/tooltip'
-  import { useCreateAnalysis } from '$lib/hooks/useCreateAnalysis'
+  // import { useCreateAnalysis } from '$lib/hooks/useCreateAnalysis'
   import { useCreateLocalization } from '$lib/hooks/useCreateLocalization'
-  import { useJob } from '$lib/hooks/useJob'
+  // import { useJob } from '$lib/hooks/useJob'
   import { REGIONS } from '$lib/regions'
   import type { CountryCode } from '$lib/server/prisma'
   import { focusedRegions } from '$lib/stores.svelte'
@@ -22,11 +22,11 @@
 
   const { regions } = $derived(focusedRegions)
 
-  const job = useJob(page.params.storeId!)
-  const jobStatus = $derived(job.data?.status ?? 'PENDING')
-  const { mutate: createAnalysis, isPending: isCreatingAnalysis } = useCreateAnalysis(
-    page.params.storeId!
-  )
+  // const job = useJob(page.params.storeId!)
+  // const jobStatus = $derived(job.data?.status ?? 'PENDING')
+  // const { mutate: createAnalysis, isPending: isCreatingAnalysis } = useCreateAnalysis(
+  //   page.params.storeId!
+  // )
   const { mutate: createLocalization, isPending } = $derived(
     useCreateLocalization(page.params.storeId!)
   )
@@ -137,28 +137,29 @@
       <div class="mt-4" transition:slide={{ duration: 300 }}>
         <Button
           class="group w-full bg-linear-to-r from-primary to-purple-500 font-semibold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-600 hover:to-purple-600"
-          disabled={isPending || isCreatingAnalysis || jobStatus === 'ANALYZING'}
-          loading={isPending || isCreatingAnalysis || jobStatus === 'ANALYZING'}
+          disabled={isPending}
+          loading={isPending}
           onclick={() => {
-            if (jobStatus !== 'ANALYZED') {
-              createAnalysis()
-            } else {
-              createLocalization(regions)
-            }
+            createLocalization(regions)
+            // if (jobStatus !== 'ANALYZED') {
+            //   createAnalysis()
+            // } else {
+            //   createLocalization(regions)
+            // }
           }}
         >
-          {#if isCreatingAnalysis || jobStatus === 'ANALYZING'}
+          <!-- {#if isCreatingAnalysis || jobStatus === 'ANALYZING'}
             Waiting for analysis to complete
           {:else if jobStatus === 'ANALYSIS_FAILED'}
             Retry Analysis?
-          {:else}
-            Continue
-            {#if !isPending}
-              <PhArrowRight
-                class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-              />
-            {/if}
+          {:else} -->
+          Continue
+          {#if !isPending}
+            <PhArrowRight
+              class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+            />
           {/if}
+          <!-- {/if} -->
         </Button>
       </div>
     {/if}

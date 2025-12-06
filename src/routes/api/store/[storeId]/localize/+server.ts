@@ -17,7 +17,11 @@ export async function POST({ params: { storeId }, request }) {
     where: {
       id: storeId,
       status: {
-        in: [StoreStatus.ANALYZED, StoreStatus.LOCALIZATION_FAILED],
+        in: [
+          // StoreStatus.ANALYZED,
+          StoreStatus.PENDING,
+          StoreStatus.LOCALIZATION_FAILED,
+        ],
       },
     },
   })
