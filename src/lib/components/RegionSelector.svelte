@@ -5,23 +5,26 @@
   import { Tooltip, TooltipContent, TooltipTrigger } from '$lib/components/ui/tooltip'
   import { TooltipProvider } from '$lib/components/ui/tooltip'
   import { REGIONS } from '$lib/regions'
+  import { focusedRegions } from '$lib/stores.svelte'
   import { fade, fly, slide } from 'svelte/transition'
+  import { page } from '$app/state'
+  import { useCreateLocalization } from '$lib/hooks/useCreateLocalization'
+  import type { CountryCode } from '$lib/server/prisma'
 
-  let {
-    selectedRegions = $bindable([]),
-  }: {
-    selectedRegions?: string[]
-  } = $props()
-
-  function toggleRegion(code: string) {
-    if (selectedRegions.includes(code)) {
-      selectedRegions = selectedRegions.filter((r) => r !== code)
+  function toggleRegion(code: CountryCode) {
+    if (focusedRegions.regions.includes(code)) {
+      focusedRegions.regions = focusedRegions.regions.filter((r) => r !== code)
     } else {
-      selectedRegions.push(code)
+      focusedRegions.regions.push(code)
     }
   }
 
-  function onContinue() {}
+  const { regions } = $derived(focusedRegions)
+
+  const { mutate: createLocalization, isPending } = useCreateLocalization()
+  function onContinue() {
+    createLocalization({ storeId: page.params.storeId!, regions: regions })
+  }
 </script>
 
 <TooltipProvider>
@@ -41,15 +44,15 @@
           <TooltipTrigger>
             {#snippet child({ props })}
               <button
-                class:bg-white_10={selectedRegions.includes(region.code)}
-                class:border-white_20={selectedRegions.includes(region.code)}
+                class:bg-white_10={regions.includes(region.code)}
+                class:border-white_20={regions.includes(region.code)}
                 in:fly|global={{ y: 100, delay: i * 100 + 500 }}
                 {...props}
                 class="group relative flex w-full cursor-pointer items-center gap-3 rounded-lg border border-transparent bg-white/0 p-3 text-left transition-all duration-300 hover:border-white/10 hover:bg-white/5"
                 onclick={() => toggleRegion(region.code)}
               >
                 <!-- Selection Glow -->
-                {#if selectedRegions.includes(region.code)}
+                {#if regions.includes(region.code)}
                   <div
                     style:background-color={region.color}
                     class="absolute inset-0 rounded-lg opacity-20 blur-md transition-opacity duration-500"
@@ -80,10 +83,10 @@
 
                 <div
                   class="z-10 flex h-5 w-5 items-center justify-center rounded-full border border-white/20 transition-all duration-300 group-hover:border-white/40"
-                  class:bg-white={selectedRegions.includes(region.code)}
-                  class:border-white={selectedRegions.includes(region.code)}
+                  class:bg-white={regions.includes(region.code)}
+                  class:border-white={regions.includes(region.code)}
                 >
-                  {#if selectedRegions.includes(region.code)}
+                  {#if regions.includes(region.code)}
                     <PhCheck class="h-3 w-3 text-black" />
                   {/if}
                 </div>
@@ -125,11 +128,12 @@
       {/each}
     </div>
 
-    {#if selectedRegions.length > 0}
-      <div class="mt-4" in:slide={{ duration: 300 }}>
+    {#if regions.length > 0}
+      <div class="mt-4" transition:slide={{ duration: 300 }}>
         <Button
           class="w-full bg-linear-to-r from-primary to-purple-500 font-semibold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-600 hover:to-purple-600"
           onclick={onContinue}
+          disabled={isPending}
         >
           Continue
           <PhArrowRight class="ml-2 h-4 w-4" />

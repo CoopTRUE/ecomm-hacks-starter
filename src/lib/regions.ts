@@ -1,5 +1,7 @@
+import type { CountryCode } from './server/prisma'
+
 export interface Region {
-  code: string
+  code: CountryCode
   name: string
   color: string
   requirements: string[]
@@ -8,7 +10,7 @@ export interface Region {
   lng: number
 }
 
-export const REGIONS: Region[] = [
+export const REGIONS = [
   {
     code: 'US',
     name: 'United States',
@@ -87,6 +89,4 @@ export const REGIONS: Region[] = [
     lat: -25.2744,
     lng: 133.7751,
   },
-]
-
-export const REGION_CODES = REGIONS.map((r) => r.code)
+] as const satisfies Region[]
