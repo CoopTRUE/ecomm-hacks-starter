@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit'
-import { prisma } from '$lib/server/prisma'
 import { analyzeProduct } from '$lib/server/functions'
+import { prisma } from '$lib/server/prisma'
 
 export async function POST({ params }) {
   const { id } = params

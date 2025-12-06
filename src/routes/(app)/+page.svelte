@@ -3,15 +3,15 @@
   import KeyedMount from '$lib/components/KeyedMount.svelte'
   import Upload from '$lib/components/Upload'
   import { cubicOut, expoOut } from 'svelte/easing'
-  import { scale } from 'svelte/transition'
+  import { fade, scale } from 'svelte/transition'
 </script>
 
 <div class="container mx-auto flex flex-col items-center gap-5">
   <Hero />
   <KeyedMount>
     <div
-      in:scale={{ delay: 1000, start: 0.7, duration: 1000, easing: expoOut }}
-      out:scale={{ duration: 500, start: 0.7, easing: cubicOut }}
+      in:scale|global={{ delay: 1000, start: 0.7, duration: 1000, easing: expoOut }}
+      out:fade|global={{ duration: 500 }}
     >
       <Upload />
     </div>
