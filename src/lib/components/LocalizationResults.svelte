@@ -181,12 +181,11 @@
                 </div>
               </div>
 
-              Right Column: Text
               <div class="space-y-6">
                 <h2 class="text-xl font-semibold">Text Adaptation</h2>
 
                 <div class="space-y-4">
-                  {#each variant.localizedText as textBlock, i}
+                  {#each JSON.parse(variant.localizedText[0]) as textBlock, i}
                     <TextCard index={i} textData={textBlock} />
                   {/each}
 
