@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { useMutationState } from '@tanstack/svelte-query'
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
   import Button from '$lib/components/ui/button/button.svelte'
+  import { useCreateLocalization } from '$lib/hooks/useCreateLocalization'
   import { useJob } from '$lib/hooks/useJob'
   import { onMount } from 'svelte'
   import { cubicOut } from 'svelte/easing'
@@ -10,6 +12,7 @@
   const storeId = page.params.storeId!
   const job = useJob(storeId)
   const jobStatus = $derived(job.data?.status ?? 'PENDING')
+  const jobRegions = $derived(job.data?.info?.regions ?? [])
 
   // Status mapping for text content
   const statusContent: Record<string, { title: string; desc: string; step: number }> = {
@@ -41,6 +44,7 @@
   }
 
   let currentContent = $derived(statusContent[jobStatus] || statusContent.PENDING)
+  const { mutate: createLocalization, isPending } = $derived(useCreateLocalization(storeId))
 
   // Loading dots animation state
   let dots = $state('')
@@ -177,7 +181,13 @@
       </div>
     {:else if jobStatus === 'LOCALIZATION_FAILED'}
       <div class="mt-10" in:fly={{ y: 10, delay: 500 }}>
-        <Button onclick={() => location.reload()} size="lg" variant="outline">Retry</Button>
+        <Button
+          disabled={isPending}
+          loading={isPending}
+          onclick={() => createLocalization(jobRegions)}
+          size="lg"
+          variant="outline">Retry</Button
+        >
       </div>
     {/if}
   </div>

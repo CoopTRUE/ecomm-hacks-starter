@@ -2,15 +2,18 @@ import { createQuery } from '@tanstack/svelte-query'
 // import { goto } from '$app/navigation'
 // import { resolve } from '$app/paths'
 import { api } from '$lib/api'
-import type { StoreStatus } from '$lib/server/prisma'
+import type { CountryCode, StoreStatus } from '$lib/server/prisma'
 
 export function useJob(storeId: string) {
   return createQuery(() => ({
     queryKey: ['job', storeId],
     queryFn: async () => {
-      const response = await api.get<{ status: StoreStatus; localizedText?: string }>(
-        `/store/${storeId}/status`
-      )
+      const response = await api.get<{
+        status: StoreStatus
+        info?: {
+          regions: CountryCode[]
+        }
+      }>(`/store/${storeId}/status`)
       return response.data
     },
     refetchInterval: ({ state: { data } }) => {
