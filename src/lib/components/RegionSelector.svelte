@@ -32,7 +32,6 @@
   )
 </script>
 
-useJob
 <Tooltip.Provider>
   <div
     class="absolute top-0 bottom-0 left-0 flex flex-col gap-4 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl"

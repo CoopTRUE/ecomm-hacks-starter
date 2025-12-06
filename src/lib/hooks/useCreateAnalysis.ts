@@ -7,7 +7,7 @@ export function useCreateAnalysis(storeId: string) {
     mutationFn: async () => {
       await api.post(`/store/${storeId}/analyze`)
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['job', storeId] })
     },
   }))
