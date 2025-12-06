@@ -1,7 +1,3 @@
-## Your Submission
-
-**Delete the challenge brief above and fill out the sections below:**
-
 ### Team Name
 
 The Cavendishes
@@ -13,29 +9,27 @@ The Cavendishes
 
 ### Demo
 
-- **Live URL:** [your-app.vercel.app or similar]
+- **Live URL:** <https://ecomm-hacks-starter-production.up.railway.app/>
 - **Demo Video:** [YouTube/Loom link if applicable]
 
 ### What We Built
 
-We built a tool that makes localization and compliance easy in international markets.
+We built a tool that makes localization and compliance easy in international markets. Upload any storefront image(s) or paste a URL to a product page and we'll analyze it and generate a localized version for you for 10+ regions.
 
 ### How It Works
 
-[Brief explanation of your architecture and how you're using Nano Banana Pro and Gemini 3 Pro]
-
 ### Key Features
 
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
+- Smooth and intuitive UI with <1mb bundle.
+- Exposes easy API endpoints at every step of the process.
+- All data is hosted and able to be retrieved by the user at any time.
 
 ### Tech Stack
 
 - **Frontend:** Svelte + Tailwind + Shadcn UI + Phosphor Icons + ThreeJS + Tanstack Query
 - **Backend:** Bun + Prisma + PostgreSQL + Railway
 - **Models:** Gemini 3 Pro, Nano Banana Pro
-- **Other:** [any other notable tech]
+- **Other:** Fully TypeSafe, self-hostable, and fully safe from data leaks.
 
 ### Setup Instructions
 
@@ -51,7 +45,9 @@ bun dev
 
 ### Screenshots
 
-[Add 2-3 screenshots of your app in action]
+![Screenshot 1](./static/screenshot1.png)
+![Screenshot 2](./static/screenshot2.png)
+![Screenshot 3](./static/screenshot3.png)
 
 ### Challenges We Faced
 
