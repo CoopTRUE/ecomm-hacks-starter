@@ -82,7 +82,7 @@
                   <span
                     class="text-[10px] text-white/40 transition-colors group-hover:text-white/60"
                   >
-                    {region.requirements.slice(0, 2).join(', ')}...
+                    {region.requirements[0]}
                   </span>
                 </div>
 

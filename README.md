@@ -92,9 +92,8 @@ You might make one of these more interesting by:
 
 ### Team Members
 
-- [Name 1]
-- [Name 2]
-- [etc.]
+- Cooper Oliff
+- Otto Cline
 
 ### Demo
 
@@ -103,7 +102,7 @@ You might make one of these more interesting by:
 
 ### What We Built
 
-[2-3 sentence description of your tool and what problem it solves]
+We built a tool that allows you to localize products for international markets.
 
 ### How It Works
 
@@ -125,9 +124,13 @@ You might make one of these more interesting by:
 ### Setup Instructions
 
 ```bash
-# How to run your project locally
-npm install
-npm run dev
+# Make sure you have bun installed (http://bun.sh/)
+
+# Install dependencies
+bun install
+
+# Run the development server
+bun dev
 ```
 
 ### Screenshots
