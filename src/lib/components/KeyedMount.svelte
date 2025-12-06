@@ -6,6 +6,6 @@
   $inspect(loaded.loaded)
 </script>
 
-{#key loaded.loaded}
+{#if loaded.loaded}
   {@render children()}
-{/key}
+{/if}

@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { browser } from '$app/environment'
-  import { loaded } from '$lib/stores.svelte'
   import { T } from '@threlte/core'
   import { OrbitControls } from '@threlte/extras'
+  import { browser } from '$app/environment'
+  import { loaded } from '$lib/stores.svelte'
 
   async function loadGlobe() {
     if (!browser) return null
@@ -19,11 +19,18 @@
 </script>
 
 <T.PerspectiveCamera makeDefault position={[0, 0, 400]}>
-  <OrbitControls enableDamping autoRotate autoRotateSpeed={0.5} />
+  <OrbitControls
+    autoRotate
+    autoRotateSpeed={0.5}
+    enableDamping
+    enablePan={false}
+    enableRotate={false}
+    enableZoom={false}
+  />
 </T.PerspectiveCamera>
 
 <T.AmbientLight intensity={1.5} />
-<T.DirectionalLight position={[10, 10, 5]} intensity={2} />
+<T.DirectionalLight intensity={2} position={[10, 10, 5]} />
 
 {#await globePromise then globe}
   {#if globe}

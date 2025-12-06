@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { fade, fly, slide } from 'svelte/transition'
   import KeyedMount from './KeyedMount.svelte'
   import { cubicOut, quartInOut, quartOut, quintOut } from 'svelte/easing'
+  import { fade, fly, slide } from 'svelte/transition'
 </script>
 
 <KeyedMount>
@@ -14,8 +14,8 @@
       <span class="text-primary">Standard</span>
     </h1>
     <p
-      in:slide|global={{ delay: 1400, axis: 'y', easing: quartInOut, duration: 500 }}
-      class="ml-4 pb-20 text-muted-foreground/80"
+      class="ml-4 pb-16 text-muted-foreground/80"
+      in:slide|global={{ delay: 1400, axis: 'y', duration: 500 }}
     >
       Unpeeling the layers of complexity with <strong>precision</strong> and <i>grace</i>.
       <span class="font-medium text-primary">Upload to get started.</span>
