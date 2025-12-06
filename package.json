@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "vite dev",
     "build": "vite build",
     "start": "bun run build/index.js",
