@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { T, useCamera } from '@threlte/core'
+  import { T, useCamera, useTask } from '@threlte/core'
   import { OrbitControls } from '@threlte/extras'
   import { browser } from '$app/environment'
   import { loaded } from '$lib/stores.svelte'
   import type { OrbitControls as OrbitControlsType } from 'three/examples/jsm/Addons.js'
   import { onMount } from 'svelte'
   import type ThreeGlobeType from 'three-globe'
-  import { Vector3 } from 'three'
 
   let globe = $state.raw<ThreeGlobeType | null>(null)
 
@@ -24,9 +23,6 @@
 
   onMount(() => {
     loadGlobe()
-    setTimeout(() => {
-      camera.current.lookAt(new Vector3(0, 20, 50))
-    }, 2000)
   })
 </script>
 

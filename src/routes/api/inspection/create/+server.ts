@@ -2,6 +2,7 @@ import { error, json } from '@sveltejs/kit'
 import { MAX_FILE_SIZE, MAX_FILES } from '$lib/constants'
 import { prisma } from '$lib/server/prisma'
 import captureWebsite from 'capture-website'
+import sharp from 'sharp'
 import { z } from 'zod'
 
 const schema = z
@@ -47,12 +48,21 @@ export async function POST({ request }) {
 
   const { images, urls } = parsed.data
 
-  const imageBuffers: Buffer[] = []
+  const imageArrays: Uint8Array<ArrayBuffer>[] = []
 
   // Process uploaded files
   for (const file of images) {
     if (file instanceof File) {
-      imageBuffers.push(Buffer.from(await file.arrayBuffer()))
+      try {
+        const buffer = await file.arrayBuffer()
+        const compressed = await sharp(buffer)
+          .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
+          .jpeg({ quality: 80 })
+          .toBuffer()
+        imageArrays.push(new Uint8Array(compressed))
+      } catch (e) {
+        console.error('Failed to compress uploaded image:', e)
+      }
     }
   }
 
@@ -61,24 +71,27 @@ export async function POST({ request }) {
     urls.map(async (url) => {
       try {
         const buffer = await captureWebsite.buffer(url, { delay: 3, type: 'png' })
-        imageBuffers.push(Buffer.from(buffer))
+        const compressed = await sharp(buffer)
+          .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
+          .jpeg({ quality: 80 })
+          .toBuffer()
+        imageArrays.push(new Uint8Array(compressed))
       } catch (e) {
-        console.error(`Failed to capture ${url}:`, e)
+        console.error(`Failed to capture/compress ${url}:`, e)
         // Proceed without this image or fail? For now, log and ignore
       }
     })
   )
 
-  if (imageBuffers.length === 0) {
+  if (imageArrays.length === 0) {
     return error(400, 'No valid images provided or generated from URLs')
   }
 
   const inspection = await prisma.productInspection.create({
     data: {
-      images: imageBuffers,
-      status: 'PENDING',
+      images: imageArrays,
     },
   })
 
-  return json({ success: true, id: inspection.id })
+  return json({ id: inspection.id })
 }

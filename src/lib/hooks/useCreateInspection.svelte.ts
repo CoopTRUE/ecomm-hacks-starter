@@ -11,7 +11,7 @@ export function useCreateInspection() {
       data.urls.forEach((url, index) => formData.append(`urls[${index}]`, url))
 
       const response = await api.post<{ id: string }>('/inspection/create', formData)
-      goto(resolve(`/process/${response.data.id}`))
+      goto(resolve(`/app/${response.data.id}`))
     },
   }))
 }

@@ -127,7 +127,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background font-sans text-foreground antialiased;
+    @apply overflow-x-hidden bg-background font-sans text-foreground antialiased;
     background: radial-gradient(circle at 50% 0%, #2a2a35 0%, var(--background) 70%);
     background-attachment: fixed;
   }
