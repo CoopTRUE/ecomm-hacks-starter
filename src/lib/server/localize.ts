@@ -24,7 +24,7 @@ export async function localizeStore(store: StoreInformation, regions: CountryCod
     )
     console.log('LOCALIZED IMAGES', results)
 
-    // Check if all failed
+    // Check if any failed
     const anyFailed = results.some((r) => r.status === 'rejected')
     if (anyFailed) {
       await prisma.storeInformation.update({

@@ -6,39 +6,43 @@ export const IMAGE_GENERATION_PROMPT = (
   targetRegion: string,
   requirements: readonly string[] = []
 ) => `You are an expert International Art Director and Regulatory Compliance Officer for GlobalShelf.
-Your task is to "localize" the attached image, which may contain one or multiple products, for the [${targetRegion}] market.
+Your task is to "localize" the attached image for the [${targetRegion}] market.
 
-### 1. CONTEXT & GOAL
-Transform the visual presentation to look native, authentic, and legally compliant for a consumer in [${targetRegion}].
-- If multiple products are visible, adapt *all* of them consistent with the target market.
-- Maintain visual coherence across the entire collection or shelf.
+### 1. CRITICAL: PRESERVE THE ORIGINAL COMPOSITION
+**DO NOT crop, zoom, or reframe the image.** Keep the EXACT same:
+- Camera angle and perspective
+- Full scene framing (wide shot stays wide, storefront stays storefront)
+- Layout and arrangement of all products/elements
+- Background, environment, and setting
 
-### 2. REQUIREMENTS CHECKLIST
-Based on the target region, apply the following adaptations:
+You are ONLY modifying text, labels, signage, and product imagery IN-PLACE within the existing composition.
 
-**A. Specific Region Requirements:**
+### 2. WHAT TO LOCALIZE (in-place only)
+Apply the following adaptations WITHOUT changing the overall scene composition:
+
+**A. Text & Translation (CRITICAL):**
+- Translate **all** visible text: Product Names, Labels, Signage, Price Tags, Banners
+- Translate any Taglines, Descriptions, or Promotional text
+- Use locally appropriate fonts and scripts for [${targetRegion}]
+- Keep text in the SAME positions and relative sizes
+
+**B. Regulatory Compliance:**
 ${requirements.map((req) => `- ${req}`).join('\n')}
+- Add required regulatory symbols in standard locations (e.g., CE Mark for EU)
+- Include mandatory warnings in the local language
+- Convert units to local standard (metric vs. imperial)
 
-**B. Visual Language & Culture:**
-- **[${targetRegion}] Aesthetic:** Apply culturally relevant styling (e.g., lighting, background, propping).
-- Adjust the color palette if necessary to align with local color symbolism and preferences.
-- Ensure any human models, environments, or lifestyle elements look locally appropriate.
+**C. Cultural Adaptation (subtle):**
+- Adjust imagery on packaging/signage to be culturally appropriate for [${targetRegion}]
+- Adapt color symbolism only where necessary for local preferences
+- Keep the same overall aesthetic and lighting
 
-**C. Text & Translation:**
-- Translate **all** visible Product Names, Labels, and Packaging text.
-- Translate any Taglines, Descriptions, or Price Tags.
-- Ensure typography uses locally popular fonts and scripts (e.g., correct writing systems for the region).
-
-**D. Regulatory Compliance (CRITICAL):**
-- **Marks:** Add required regulatory symbols in visible, standard locations for *each* applicable product (e.g., CE Mark for EU, recycling codes).
-- **Warnings:** Include mandatory text warnings in the local language (e.g., allergen warnings).
-- **Formatting:** Convert all units to the local standard (e.g., metric vs. imperial).
-
-### 3. EXECUTION INSTRUCTIONS
-- **Input:** The attached image (single product or multi-item scene).
-- **Output:** A high-fidelity, photorealistic edited image.
-- **Style:** Commercial product photography, 4k resolution, sharp focus.
-- **Constraint:** Maintain the original brand identity and logo recognition, but adapt all surrounding context, packaging details, and secondary text.`
+### 3. OUTPUT REQUIREMENTS
+- **MUST maintain identical framing and composition as the input image**
+- High-fidelity, photorealistic result
+- 4k resolution, sharp focus
+- If input is a storefront/shelf scene, output MUST be the same storefront/shelf scene
+- Do NOT generate closeups or cropped versions`
 
 export const EXTRACTION_PROMPT = `Analyze the attached localized product image and extract the following information into a structured JSON format.
 

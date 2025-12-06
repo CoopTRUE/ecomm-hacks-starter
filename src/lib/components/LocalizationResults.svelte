@@ -13,9 +13,7 @@
 
   let { storeId }: { storeId: string } = $props()
 
-  const query = $derived(useStoreDetails(storeId))
-  const store = $derived(query.data)
-  const isLoading = $derived(query.isLoading)
+  const { data: store, isLoading } = $derived(useStoreDetails(storeId))
 
   // Use store state for selected variant ID to coordinate with Tabs
   let selectedVariantId = $state<string>('')
@@ -150,7 +148,7 @@
 
         {#each store.variants as variant}
           <Tabs.Content class="mt-6 outline-none" value={variant.id}>
-            <div class="grid gap-8 lg:grid-cols-2" in:fade={{ duration: 200 }}>
+            <div class="grid gap-8 lg:grid-cols-2" in:fade={{ duration: 200, delay: 100 }}>
               <!-- Left Column: Images -->
               <div class="space-y-6">
                 <h2 class="text-xl font-semibold">Visual Adaptation</h2>
@@ -183,7 +181,7 @@
                 </div>
               </div>
 
-              <!-- Right Column: Text -->
+              Right Column: Text
               <div class="space-y-6">
                 <h2 class="text-xl font-semibold">Text Adaptation</h2>
 
