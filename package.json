@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "start": "node .output/server/index.js",
+    "start": "bun run build/index.js",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -55,9 +55,7 @@
     "typescript-eslint": "^8.47.0",
     "unplugin-icons": "^22.5.0",
     "vite": "^7.2.2",
-    "zod": "^4.1.13"
-  },
-  "dependencies": {
+    "zod": "^4.1.13",
     "@types/dropzone": "^5.7.9",
     "prisma": "^7.1.0"
   }

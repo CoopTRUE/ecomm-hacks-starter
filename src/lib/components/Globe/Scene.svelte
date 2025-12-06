@@ -1,5 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment'
+  import { loaded } from '$lib/stores.svelte'
   import { T } from '@threlte/core'
   import { OrbitControls } from '@threlte/extras'
 
@@ -10,6 +11,7 @@
       .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
       .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
 
+    loaded.loaded = true
     return globe
   }
 

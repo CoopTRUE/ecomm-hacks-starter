@@ -1,11 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Roboto', sans-serif;
+  --font-sans: 'Instrument Sans', sans-serif;
   --font-serif: 'Instrument Serif', serif;
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -58,7 +57,7 @@
   --popover-foreground: #f8fafc;
   --primary: #6366f1;
   --primary-foreground: #f8fafc;
-  --secondary: #1a1a24;
+  --secondary: #1e1e2e;
   --secondary-foreground: #f8fafc;
   --muted: #1a1a24;
   --muted-foreground: #94a3b8;
@@ -95,7 +94,7 @@
   --popover-foreground: #f8fafc;
   --primary: #6366f1;
   --primary-foreground: #f8fafc;
-  --secondary: #1a1a24;
+  --secondary: #1e1e2e;
   --secondary-foreground: #f8fafc;
   --muted: #1a1a24;
   --muted-foreground: #94a3b8;
@@ -129,5 +128,7 @@
   }
   body {
     @apply bg-background font-sans text-foreground antialiased;
+    background: radial-gradient(circle at 50% 0%, #2a2a35 0%, var(--background) 70%);
+    background-attachment: fixed;
   }
 }
