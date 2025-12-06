@@ -3,8 +3,8 @@
   import PhLink from '~icons/ph/link'
   import PhX from '~icons/ph/x'
   import { Button } from '$lib/components/ui/button'
-  import { fade, slide } from 'svelte/transition'
   import { flip } from 'svelte/animate'
+  import { fade, slide } from 'svelte/transition'
 
   interface Props {
     files: File[]

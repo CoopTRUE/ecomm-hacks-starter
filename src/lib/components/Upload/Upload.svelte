@@ -4,36 +4,28 @@
   import UrlInput from './UrlInput.svelte'
   import PhArrowRight from '~icons/ph/arrow-right'
   import { Button } from '$lib/components/ui/button'
-  import { slide } from 'svelte/transition'
   import { MAX_FILES } from '$lib/constants'
+  import { useCreateInspection } from '$lib/hooks/useCreateInspection.svelte'
+  import { slide } from 'svelte/transition'
 
   interface Props {
-    uploadUrl?: string
     acceptedFiles?: string
-    onUploadSuccess?: (data: { file: File; response: any }) => void
-    onUploadError?: (data: { file: File; error: any }) => void
     onFileAdded?: (data: { file: File }) => void
     onFileRejected?: (data: { file: File }) => void
     onFileRemoved?: (data: { file: File }) => void
     onUrlAdded?: (data: { url: string }) => void
-    onContinue?: (data: { files: File[]; urls: string[] }) => void
   }
 
   let {
-    uploadUrl = '/api/upload',
     acceptedFiles = 'image/*',
-    onUploadSuccess,
-    onUploadError,
     onFileAdded,
     onFileRejected,
     onFileRemoved,
     onUrlAdded,
-    onContinue,
   }: Props = $props()
 
   let files = $state<File[]>([])
   let urls = $state<string[]>([])
-  let isUploading = $state(false)
 
   function handleFilesAdded(newFiles: File[]) {
     const uniqueNewFiles = newFiles.filter(
@@ -46,7 +38,7 @@
     const filesToAdd = uniqueNewFiles.slice(0, availableSlots)
 
     filesToAdd.forEach((file) => {
-      files = [...files, file]
+      files.push(file)
       onFileAdded?.({ file })
     })
   }
@@ -57,58 +49,27 @@
 
   function removeFile(index: number) {
     const file = files[index]
-    files = files.filter((_, i) => i !== index)
+    files.splice(index, 1)
     onFileRemoved?.({ file })
   }
 
   function handleUrlAdded(url: string) {
     if (urls.includes(url)) return
-    urls = [...urls, url]
+    urls.push(url)
     onUrlAdded?.({ url })
   }
 
   function removeUrl(index: number) {
-    urls = urls.filter((_, i) => i !== index)
+    urls.splice(index, 1)
   }
 
-  async function handleContinue() {
-    if (files.length === 0 && urls.length === 0) return
-
-    if (files.length > 0 && uploadUrl) {
-      isUploading = true
-      try {
-        const formData = new FormData()
-        files.forEach((file) => {
-          formData.append('files', file)
-        })
-
-        const response = await fetch(uploadUrl, {
-          method: 'POST',
-          body: formData,
-        })
-
-        if (response.ok) {
-          const result = await response.json()
-          files.forEach((file) => onUploadSuccess?.({ file, response: result }))
-        } else {
-          throw new Error('Upload failed')
-        }
-      } catch (err) {
-        console.error(err)
-        files.forEach((file) => onUploadError?.({ file, error: err }))
-      } finally {
-        isUploading = false
-      }
-    }
-
-    onContinue?.({ files, urls })
-  }
+  const createInspectionMutation = useCreateInspection()
 </script>
 
 <div class="w-3xl space-y-6">
   <DropZone
     {acceptedFiles}
-    disabled={isUploading}
+    disabled={createInspectionMutation.isPending}
     onFileRejected={handleFileRejected}
     onFilesAdded={handleFilesAdded}
   />
@@ -121,15 +82,15 @@
     <div class="flex justify-end pt-4" transition:slide>
       <Button
         class="h-11 min-w-[120px] gap-2 text-base"
-        disabled={isUploading}
-        onclick={handleContinue}
+        disabled={createInspectionMutation.isPending}
+        onclick={() => createInspectionMutation.mutate({ files, urls })}
         size="lg"
       >
-        {#if isUploading}
+        {#if createInspectionMutation.isPending}
           <span
             class="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
           ></span>
-          Uploading...
+          Submitting...
         {:else}
           Continue
           <PhArrowRight class="h-5 w-5" />

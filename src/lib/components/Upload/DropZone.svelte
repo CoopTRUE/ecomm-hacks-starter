@@ -1,7 +1,7 @@
 <script lang="ts">
   import PhCloudArrowUp from '~icons/ph/cloud-arrow-up'
-  import { cn } from '$lib/utils'
   import { MAX_FILES } from '$lib/constants'
+  import { cn } from '$lib/utils'
 
   interface Props {
     acceptedFiles?: string

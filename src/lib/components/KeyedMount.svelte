@@ -3,7 +3,6 @@
   import { onMount, type Snippet } from 'svelte'
 
   let { children } = $props<{ children: Snippet }>()
-  $inspect(loaded.loaded)
 </script>
 
 {#if loaded.loaded}

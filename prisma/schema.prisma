@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../../generated/prisma"
+  output   = "./generated"
   runtime = "bun"
 }
 
@@ -14,10 +14,59 @@ datasource db {
   provider = "postgresql"
 }
 
+enum CountryConversion {
+  EU
+  JP
+  UK
+  US
+  CA
+  AU
+  NZ
+  SG
+  HK
+  CN
+  KR
+  BR
+}
+
+enum InspectionStatus {
+  PENDING
+  ANALYZING
+  ANALYZED
+  GENERATING
+  COMPLETED
+  FAILED
+}
+
 model ProductInspection {
   id        String   @id @default(uuid())
-  name      String
-  images    String[]
+  name      String?
+  images    Bytes[]
+
+  // Analysis results
+  originalData Json?
+
+  status    InspectionStatus @default(PENDING)
+
+  variants  LocalizedVariant[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model LocalizedVariant {
+  id            String            @id @default(uuid())
+  inspectionId  String
+  inspection    ProductInspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  region        CountryConversion
+
+  // Generated content
+  localizedText  Json?
+  generatedImage Bytes?
+
+  status        InspectionStatus @default(PENDING)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
