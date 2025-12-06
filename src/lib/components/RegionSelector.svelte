@@ -10,6 +10,7 @@
   import { page } from '$app/state'
   import { useCreateLocalization } from '$lib/hooks/useCreateLocalization'
   import type { CountryCode } from '$lib/server/prisma'
+  import { is } from 'zod/v4/locales'
 
   function toggleRegion(code: CountryCode) {
     if (focusedRegions.regions.includes(code)) {
@@ -21,7 +22,7 @@
 
   const { regions } = $derived(focusedRegions)
 
-  const { mutate: createLocalization, isPending } = useCreateLocalization()
+  const { mutate: createLocalization, isPending } = $derived(useCreateLocalization())
   function onContinue() {
     createLocalization({ storeId: page.params.storeId!, regions: regions })
   }

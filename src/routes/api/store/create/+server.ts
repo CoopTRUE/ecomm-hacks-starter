@@ -2,13 +2,12 @@ import { error, json } from '@sveltejs/kit'
 import { MAX_FILE_SIZE, MAX_FILES } from '$lib/constants'
 import { prisma } from '$lib/server/prisma'
 import captureWebsite from 'capture-website'
-import sharp from 'sharp'
 import { z } from 'zod'
 
 const schema = z
   .object({
     images: z
-      .array(z.file().min(1).max(MAX_FILE_SIZE).mime('image/png'))
+      .array(z.file().min(1).max(MAX_FILE_SIZE).mime('image/jpeg'))
       .max(MAX_FILES)
       .default([]),
     urls: z
@@ -55,11 +54,11 @@ export async function POST({ request }) {
     if (file instanceof File) {
       try {
         const buffer = await file.arrayBuffer()
-        const compressed = await sharp(buffer)
-          .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
-          .jpeg({ quality: 80 })
-          .toBuffer()
-        imageArrays.push(new Uint8Array(compressed))
+        // const compressed = await sharp(buffer)
+        //   .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
+        //   .jpeg({ quality: 80 })
+        //   .toBuffer()
+        imageArrays.push(new Uint8Array(buffer))
       } catch (e) {
         console.error('Failed to compress uploaded image:', e)
       }
@@ -70,12 +69,12 @@ export async function POST({ request }) {
   await Promise.all(
     urls.map(async (url) => {
       try {
-        const buffer = await captureWebsite.buffer(url, { delay: 3, type: 'png' })
-        const compressed = await sharp(buffer)
-          .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
-          .jpeg({ quality: 80 })
-          .toBuffer()
-        imageArrays.push(new Uint8Array(compressed))
+        const buffer = await captureWebsite.buffer(url, { type: 'jpeg', delay: 3 })
+        // const compressed = await sharp(buffer)
+        //   .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
+        //   .jpeg({ quality: 80 })
+        //   .toBuffer()
+        imageArrays.push(new Uint8Array(buffer))
       } catch (e) {
         console.error(`Failed to capture/compress ${url}:`, e)
         // Proceed without this image or fail? For now, log and ignore

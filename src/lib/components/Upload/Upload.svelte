@@ -63,13 +63,13 @@
     urls.splice(index, 1)
   }
 
-  const createStoreMutation = useCreateStore()
+  const { mutate: createStore, isPending } = $derived(useCreateStore())
 </script>
 
 <div class="w-3xl space-y-6">
   <DropZone
     {acceptedFiles}
-    disabled={createStoreMutation.isPending}
+    disabled={isPending}
     onFileRejected={handleFileRejected}
     onFilesAdded={handleFilesAdded}
   />
@@ -82,11 +82,11 @@
     <div class="flex justify-end pt-4" transition:slide>
       <Button
         class="h-11 min-w-[120px] gap-2 text-base"
-        disabled={createStoreMutation.isPending}
-        onclick={() => createStoreMutation.mutate({ files, urls })}
+        disabled={isPending}
+        onclick={() => createStore({ files, urls })}
         size="lg"
       >
-        {#if createStoreMutation.isPending}
+        {#if isPending}
           <span
             class="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
           ></span>

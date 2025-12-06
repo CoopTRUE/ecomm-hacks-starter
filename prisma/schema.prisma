@@ -35,15 +35,24 @@ enum LocalizationStatus {
   FAILED
 }
 
+enum StoreStatus {
+  PENDING
+  ANALYZING
+  LOCALIZING
+  LOCALIZED
+  FAILED
+}
+
 model StoreInformation {
   id        String   @id @default(uuid())
   name      String?
   images    Bytes[]
 
   // Analysis results
-  originalData Json?
+  analysis String?
 
   variants  LocalizedVariant[]
+  status    StoreStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
