@@ -38,9 +38,11 @@ enum LocalizationStatus {
 enum StoreStatus {
   PENDING
   ANALYZING
+  ANALYZED
+  ANALYSIS_FAILED
   LOCALIZING
   LOCALIZED
-  FAILED
+  LOCALIZATION_FAILED
 }
 
 model StoreInformation {

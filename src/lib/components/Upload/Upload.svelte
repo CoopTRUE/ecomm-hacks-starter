@@ -83,16 +83,12 @@
       <Button
         class="h-11 min-w-[120px] gap-2 text-base"
         disabled={isPending}
+        loading={isPending}
         onclick={() => createStore({ files, urls })}
         size="lg"
       >
-        {#if isPending}
-          <span
-            class="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-          ></span>
-          Submitting...
-        {:else}
-          Continue
+        Continue
+        {#if !isPending}
           <PhArrowRight class="h-5 w-5" />
         {/if}
       </Button>

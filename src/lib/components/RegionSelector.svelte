@@ -1,16 +1,16 @@
 <script lang="ts">
   import PhArrowRight from '~icons/ph/arrow-right'
   import PhCheck from '~icons/ph/check'
+  import { page } from '$app/state'
   import { Button } from '$lib/components/ui/button'
-  import { Tooltip, TooltipContent, TooltipTrigger } from '$lib/components/ui/tooltip'
-  import { TooltipProvider } from '$lib/components/ui/tooltip'
+  import * as Tooltip from '$lib/components/ui/tooltip'
+  import { useCreateAnalysis } from '$lib/hooks/useCreateAnalysis'
+  import { useCreateLocalization } from '$lib/hooks/useCreateLocalization'
+  import { useJob } from '$lib/hooks/useJob'
   import { REGIONS } from '$lib/regions'
+  import type { CountryCode } from '$lib/server/prisma'
   import { focusedRegions } from '$lib/stores.svelte'
   import { fade, fly, slide } from 'svelte/transition'
-  import { page } from '$app/state'
-  import { useCreateLocalization } from '$lib/hooks/useCreateLocalization'
-  import type { CountryCode } from '$lib/server/prisma'
-  import { is } from 'zod/v4/locales'
 
   function toggleRegion(code: CountryCode) {
     if (focusedRegions.regions.includes(code)) {
@@ -22,13 +22,18 @@
 
   const { regions } = $derived(focusedRegions)
 
-  const { mutate: createLocalization, isPending } = $derived(useCreateLocalization())
-  function onContinue() {
-    createLocalization({ storeId: page.params.storeId!, regions: regions })
-  }
+  const job = useJob(page.params.storeId!)
+  const jobStatus = $derived(job.data?.status ?? 'PENDING')
+  const { mutate: createAnalysis, isPending: isCreatingAnalysis } = useCreateAnalysis(
+    page.params.storeId!
+  )
+  const { mutate: createLocalization, isPending } = $derived(
+    useCreateLocalization(page.params.storeId!)
+  )
 </script>
 
-<TooltipProvider>
+useJob
+<Tooltip.Provider>
   <div
     class="absolute top-0 bottom-0 left-0 flex flex-col gap-4 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl"
     in:fade|global={{ duration: 300, delay: 500 }}
@@ -41,8 +46,8 @@
 
     <div class="flex flex-1 flex-col gap-2 overflow-y-auto">
       {#each REGIONS as region, i}
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger>
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger>
             {#snippet child({ props })}
               <button
                 class:bg-white_10={regions.includes(region.code)}
@@ -93,8 +98,8 @@
                 </div>
               </button>
             {/snippet}
-          </TooltipTrigger>
-          <TooltipContent
+          </Tooltip.Trigger>
+          <Tooltip.Content
             style="border-color: {region.color}40; box-shadow: 0 0 30px -10px {region.color}20"
             class="z-50 ml-4 w-64 rounded-lg border border-white/10 bg-[#0a0a0f]/95 p-4 shadow-xl backdrop-blur-xl"
             align="start"
@@ -124,22 +129,39 @@
               <span class="text-[10px] text-white/40">Est. cost</span>
               <span class="font-mono text-xs text-white">€0.40</span>
             </div>
-          </TooltipContent>
-        </Tooltip>
+          </Tooltip.Content>
+        </Tooltip.Root>
       {/each}
     </div>
 
     {#if regions.length > 0}
       <div class="mt-4" transition:slide={{ duration: 300 }}>
         <Button
-          class="w-full bg-linear-to-r from-primary to-purple-500 font-semibold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-600 hover:to-purple-600"
-          onclick={onContinue}
-          disabled={isPending}
+          class="group w-full bg-linear-to-r from-primary to-purple-500 font-semibold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-600 hover:to-purple-600"
+          disabled={isPending || isCreatingAnalysis || jobStatus === 'ANALYZING'}
+          loading={isPending || isCreatingAnalysis || jobStatus === 'ANALYZING'}
+          onclick={() => {
+            if (jobStatus !== 'ANALYZED') {
+              createAnalysis()
+            } else {
+              createLocalization(regions)
+            }
+          }}
         >
-          Continue
-          <PhArrowRight class="ml-2 h-4 w-4" />
+          {#if isCreatingAnalysis || jobStatus === 'ANALYZING'}
+            Waiting for analysis to complete
+          {:else if jobStatus === 'ANALYSIS_FAILED'}
+            Retry Analysis?
+          {:else}
+            Continue
+            {#if !isPending}
+              <PhArrowRight
+                class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+              />
+            {/if}
+          {/if}
         </Button>
       </div>
     {/if}
   </div>
-</TooltipProvider>
+</Tooltip.Provider>

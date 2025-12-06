@@ -9,10 +9,7 @@ export async function load({ params: { storeId } }) {
   if (!storeInformation) {
     redirect(302, '/')
   }
-  if (storeInformation.variants.length > 0) {
-    // Must already have variants
-    redirect(302, `/app/${storeId}/variants`)
+  return {
+    status: storeInformation.status,
   }
-
-  return { storeInformation }
 }

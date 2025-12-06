@@ -1,4 +1,5 @@
 <script lang="ts" module>
+  import SvgSpinnersBlocksShuffle3 from '~icons/svg-spinners/blocks-shuffle-3'
   import { cn, type WithElementRef } from '$lib/utils.js'
   import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements'
   import { tv, type VariantProps } from 'tailwind-variants'
@@ -38,6 +39,8 @@
     WithElementRef<HTMLAnchorAttributes> & {
       variant?: ButtonVariant
       size?: ButtonSize
+    } & {
+      loading?: boolean
     }
 </script>
 
@@ -51,6 +54,7 @@
     type = 'button',
     disabled,
     children,
+    loading = false,
     ...restProps
   }: ButtonProps = $props()
 </script>
@@ -78,5 +82,8 @@
     {...restProps}
   >
     {@render children?.()}
+    {#if loading}
+      <SvgSpinnersBlocksShuffle3 />
+    {/if}
   </button>
 {/if}

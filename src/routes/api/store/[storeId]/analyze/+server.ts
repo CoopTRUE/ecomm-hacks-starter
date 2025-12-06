@@ -1,5 +1,5 @@
 import { error, json } from '@sveltejs/kit'
-import { localizeStore } from '$lib/server/functions.js'
+import { analyzeStore } from '$lib/server/functions.js'
 import { prisma, StoreStatus } from '$lib/server/prisma.js'
 
 export async function POST({ params: { storeId } }) {
@@ -7,13 +7,13 @@ export async function POST({ params: { storeId } }) {
     where: {
       id: storeId,
       status: {
-        in: [StoreStatus.ANALYZED, StoreStatus.LOCALIZATION_FAILED],
+        in: [StoreStatus.PENDING, StoreStatus.ANALYSIS_FAILED],
       },
     },
   })
   if (!store) {
     return error(404, 'Store information not found')
   }
-  void localizeStore(store)
-  return json({ message: 'Starting localization process' })
+  void analyzeStore(store)
+  return json({ message: 'Starting analysis process' })
 }

@@ -1,5 +1,6 @@
 import { error, json } from '@sveltejs/kit'
 import { MAX_FILE_SIZE, MAX_FILES } from '$lib/constants'
+import { analyzeStore } from '$lib/server/functions'
 import { prisma } from '$lib/server/prisma'
 import captureWebsite from 'capture-website'
 import { z } from 'zod'
@@ -91,6 +92,7 @@ export async function POST({ request }) {
       images: imageArrays,
     },
   })
+  void analyzeStore(inspection)
 
   return json({ id: inspection.id })
 }
