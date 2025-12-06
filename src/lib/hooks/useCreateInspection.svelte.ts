@@ -1,4 +1,6 @@
 import { createMutation } from '@tanstack/svelte-query'
+import { goto } from '$app/navigation'
+import { resolve } from '$app/paths'
 import { api } from '$lib/api'
 
 export function useCreateInspection() {
@@ -9,7 +11,7 @@ export function useCreateInspection() {
       data.urls.forEach((url, index) => formData.append(`urls[${index}]`, url))
 
       const response = await api.post<{ id: string }>('/inspection/create', formData)
-      return response.data
+      goto(resolve(`/process/${response.data.id}`))
     },
   }))
 }

@@ -100,7 +100,7 @@
     'group relative flex min-h-[300px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed transition-all duration-300 ease-in-out',
     isDragging
       ? 'scale-[1.02] border-primary bg-primary/5 shadow-lg'
-      : 'border-muted-foreground/25 bg-card/80 backdrop-blur-xs hover:border-primary/50 hover:bg-muted/30 focus-visible:border-primary/50 focus-visible:bg-muted/30',
+      : 'border-muted-foreground/25 bg-card/80 hover:border-primary/50 hover:bg-muted/30 focus-visible:border-primary/50 focus-visible:bg-muted/30',
     disabled && 'cursor-not-allowed opacity-60'
   )}
   aria-label="Drop files here or click to upload"
