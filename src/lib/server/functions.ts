@@ -1,4 +1,4 @@
-import { type CountryConversion, InspectionStatus, prisma } from './prisma'
+import { type CountryCode, LocalizationStatus, prisma } from './prisma'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
@@ -23,19 +23,19 @@ interface LocalizationData {
   [key: string]: any
 }
 
-export async function analyzeProduct(inspectionId: string) {
+export async function analyzeStore(storeId: string) {
   try {
-    const inspection = await prisma.productInspection.findUnique({
-      where: { id: inspectionId },
+    const store = await prisma.storeInformation.findUnique({
+      where: { id: storeId },
     })
 
-    if (!inspection || !inspection.images || inspection.images.length === 0) {
+    if (!store || !store.images || store.images.length === 0) {
       throw new Error('Inspection not found or no images')
     }
 
-    await prisma.productInspection.update({
-      where: { id: inspectionId },
-      data: { status: InspectionStatus.ANALYZING },
+    await prisma.storeInformation.update({
+      where: { id: storeId },
+      data: { status: LocalizationStatus.GENERATING },
     })
 
     const model = genAI.getGenerativeModel({
@@ -55,7 +55,7 @@ export async function analyzeProduct(inspectionId: string) {
     `
 
     // Use the first image for analysis
-    const imagePart = bufferToInlineData(inspection.images[0])
+    const imagePart = bufferToInlineData(store.images[0])
 
     const result = await model.generateContent([prompt, imagePart])
     const response = await result.response
@@ -70,10 +70,10 @@ export async function analyzeProduct(inspectionId: string) {
       analysisData = { raw: text }
     }
 
-    await prisma.productInspection.update({
+    await prisma.storeInformation.update({
       where: { id: inspectionId },
       data: {
-        status: InspectionStatus.ANALYZED,
+        status: LocalizationStatus.COMPLETED,
         name: analysisData.product_name || 'Unknown Product',
         originalData: analysisData,
       },
@@ -82,42 +82,42 @@ export async function analyzeProduct(inspectionId: string) {
     return analysisData
   } catch (error) {
     console.error('Error analyzing product:', error)
-    await prisma.productInspection.update({
-      where: { id: inspectionId },
-      data: { status: InspectionStatus.FAILED },
+    await prisma.storeInformation.update({
+      where: { id: storeId },
+      data: { status: LocalizationStatus.FAILED },
     })
     throw error
   }
 }
 
-export async function localizeProduct(inspectionId: string, region: CountryConversion) {
+export async function localizeProduct(storeId: string, region: CountryCode) {
   try {
     // 1. Create or update LocalizedVariant to PENDING
     // Check if exists first to avoid duplicates if retrying
     let variant = await prisma.localizedVariant.findFirst({
-      where: { inspectionId, region },
+      where: { storeInformationId: storeId, region },
     })
 
     if (!variant) {
       variant = await prisma.localizedVariant.create({
         data: {
-          inspectionId,
+          storeInformationId: storeId,
           region,
-          status: InspectionStatus.PENDING,
+          status: LocalizationStatus.GENERATING,
         },
       })
     } else {
       await prisma.localizedVariant.update({
         where: { id: variant.id },
-        data: { status: InspectionStatus.PENDING },
+        data: { status: LocalizationStatus.GENERATING },
       })
     }
 
-    const inspection = await prisma.productInspection.findUnique({
-      where: { id: inspectionId },
+    const store = await prisma.storeInformation.findUnique({
+      where: { id: storeId },
     })
 
-    if (!inspection) throw new Error('Inspection not found')
+    if (!store) throw new Error('Store not found')
 
     // 2. Generate Localization Text
     const model = genAI.getGenerativeModel({
@@ -128,7 +128,7 @@ export async function localizeProduct(inspectionId: string, region: CountryConve
     const prompt = `
       You are an expert in international product compliance and localization.
 
-      Original product analysis: ${JSON.stringify(inspection.originalData)}
+      Original product analysis: ${JSON.stringify(store.originalData)}
       Target region: ${region}
 
       Generate localized content including:
@@ -145,7 +145,7 @@ export async function localizeProduct(inspectionId: string, region: CountryConve
 
     // We might pass the image again for context if needed, but the analysis data should suffice for text.
     // Passing image anyway for better context.
-    const imagePart = bufferToInlineData(inspection.images[0])
+    const imagePart = bufferToInlineData(store.images[0])
 
     const result = await model.generateContent([prompt, imagePart])
     const localizationData = JSON.parse(result.response.text()) as LocalizationData
@@ -153,7 +153,7 @@ export async function localizeProduct(inspectionId: string, region: CountryConve
     await prisma.localizedVariant.update({
       where: { id: variant.id },
       data: {
-        status: InspectionStatus.GENERATING,
+        status: LocalizationStatus.COMPLETED,
         localizedText: localizationData,
       },
     })
@@ -163,7 +163,7 @@ export async function localizeProduct(inspectionId: string, region: CountryConve
     // In a real scenario, we would call the image generation API here.
 
     const generatedImageBuffer = await generateLocalizedImage(
-      inspection.images[0],
+      store.images[0],
       localizationData,
       region
     )
@@ -172,7 +172,7 @@ export async function localizeProduct(inspectionId: string, region: CountryConve
     await prisma.localizedVariant.update({
       where: { id: variant.id },
       data: {
-        status: InspectionStatus.COMPLETED,
+        status: LocalizationStatus.COMPLETED,
         generatedImage: new Uint8Array(generatedImageBuffer),
       },
     })
@@ -182,12 +182,12 @@ export async function localizeProduct(inspectionId: string, region: CountryConve
     console.error(`Error localizing for ${region}:`, error)
     // Find the variant again to ensure we have the ID if it was created
     const variant = await prisma.localizedVariant.findFirst({
-      where: { inspectionId, region },
+      where: { storeInformationId: storeId, region },
     })
     if (variant) {
       await prisma.localizedVariant.update({
         where: { id: variant.id },
-        data: { status: InspectionStatus.FAILED },
+        data: { status: LocalizationStatus.FAILED },
       })
     }
     throw error
@@ -198,7 +198,7 @@ export async function localizeProduct(inspectionId: string, region: CountryConve
 async function generateLocalizedImage(
   originalImage: Uint8Array,
   localizationData: LocalizationData,
-  region: string
+  region: CountryCode
 ): Promise<Buffer> {
   // In a real implementation, this would:
   // 1. Call an Image Gen API (e.g. Imagen, DALL-E, Stability)
@@ -209,7 +209,7 @@ async function generateLocalizedImage(
   // to simulate a result.
   // Note: Returning original image for MVP flow to work without credits/API.
 
-  console.log(`Generating image for ${region} with data:`, localizationData)
+  console.log(`Generating image for ${region.toUpperCase()} with data:`, localizationData)
 
   // Simulating processing time
   await new Promise((resolve) => setTimeout(resolve, 2000))

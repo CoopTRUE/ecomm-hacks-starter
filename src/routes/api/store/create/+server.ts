@@ -87,7 +87,7 @@ export async function POST({ request }) {
     return error(400, 'No valid images provided or generated from URLs')
   }
 
-  const inspection = await prisma.productInspection.create({
+  const inspection = await prisma.storeInformation.create({
     data: {
       images: imageArrays,
     },

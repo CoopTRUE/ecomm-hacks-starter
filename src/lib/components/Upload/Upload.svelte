@@ -5,7 +5,7 @@
   import PhArrowRight from '~icons/ph/arrow-right'
   import { Button } from '$lib/components/ui/button'
   import { MAX_FILES } from '$lib/constants'
-  import { useCreateInspection } from '$lib/hooks/useCreateInspection.svelte'
+  import { useCreateStore } from '$lib/hooks/useCreateStore'
   import { slide } from 'svelte/transition'
 
   interface Props {
@@ -63,13 +63,13 @@
     urls.splice(index, 1)
   }
 
-  const createInspectionMutation = useCreateInspection()
+  const createStoreMutation = useCreateStore()
 </script>
 
 <div class="w-3xl space-y-6">
   <DropZone
     {acceptedFiles}
-    disabled={createInspectionMutation.isPending}
+    disabled={createStoreMutation.isPending}
     onFileRejected={handleFileRejected}
     onFilesAdded={handleFilesAdded}
   />
@@ -82,11 +82,11 @@
     <div class="flex justify-end pt-4" transition:slide>
       <Button
         class="h-11 min-w-[120px] gap-2 text-base"
-        disabled={createInspectionMutation.isPending}
-        onclick={() => createInspectionMutation.mutate({ files, urls })}
+        disabled={createStoreMutation.isPending}
+        onclick={() => createStoreMutation.mutate({ files, urls })}
         size="lg"
       >
-        {#if createInspectionMutation.isPending}
+        {#if createStoreMutation.isPending}
           <span
             class="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
           ></span>

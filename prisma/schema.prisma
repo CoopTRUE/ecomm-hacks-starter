@@ -14,7 +14,7 @@ datasource db {
   provider = "postgresql"
 }
 
-enum CountryConversion {
+enum CountryCode {
   EU
   JP
   UK
@@ -29,24 +29,19 @@ enum CountryConversion {
   BR
 }
 
-enum InspectionStatus {
-  PENDING
-  ANALYZING
-  ANALYZED
+enum LocalizationStatus {
   GENERATING
   COMPLETED
   FAILED
 }
 
-model ProductInspection {
+model StoreInformation {
   id        String   @id @default(uuid())
   name      String?
   images    Bytes[]
 
   // Analysis results
   originalData Json?
-
-  status    InspectionStatus @default(PENDING)
 
   variants  LocalizedVariant[]
 
@@ -56,16 +51,16 @@ model ProductInspection {
 
 model LocalizedVariant {
   id            String            @id @default(uuid())
-  inspectionId  String
-  inspection    ProductInspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  storeInformationId  String
+  storeInformation    StoreInformation @relation(fields: [storeInformationId], references: [id], onDelete: Cascade)
 
-  region        CountryConversion
+  region        CountryCode
 
   // Generated content
   localizedText  Json?
   generatedImage Bytes?
 
-  status        InspectionStatus @default(PENDING)
+  status        LocalizationStatus @default(GENERATING)
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

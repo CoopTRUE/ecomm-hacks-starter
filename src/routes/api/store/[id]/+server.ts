@@ -4,14 +4,14 @@ import { prisma } from '$lib/server/prisma'
 export async function GET({ params }) {
   const { id } = params
 
-  const inspection = await prisma.productInspection.findUnique({
+  const storeInformation = await prisma.storeInformation.findUnique({
     where: { id },
     include: { variants: true },
   })
 
-  if (!inspection) {
-    return error(404, 'Inspection not found')
+  if (!storeInformation) {
+    return error(404, 'Store information not found')
   }
 
-  return json(inspection)
+  return json(storeInformation)
 }

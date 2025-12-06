@@ -1,11 +1,11 @@
 <script lang="ts">
-  import PhCheck from '~icons/ph/check'
   import PhArrowRight from '~icons/ph/arrow-right'
-  import { type Region, REGIONS } from '$lib/regions'
-  import { fade, fly, slide } from 'svelte/transition'
+  import PhCheck from '~icons/ph/check'
+  import { Button } from '$lib/components/ui/button'
   import { Tooltip, TooltipContent, TooltipTrigger } from '$lib/components/ui/tooltip'
   import { TooltipProvider } from '$lib/components/ui/tooltip'
-  import { Button } from '$lib/components/ui/button'
+  import { REGIONS } from '$lib/regions'
+  import { fade, fly, slide } from 'svelte/transition'
 
   let {
     selectedRegions = $bindable([]),
@@ -41,11 +41,11 @@
           <TooltipTrigger>
             {#snippet child({ props })}
               <button
+                class:bg-white_10={selectedRegions.includes(region.code)}
+                class:border-white_20={selectedRegions.includes(region.code)}
                 in:fly|global={{ y: 100, delay: i * 100 + 500 }}
                 {...props}
                 class="group relative flex w-full cursor-pointer items-center gap-3 rounded-lg border border-transparent bg-white/0 p-3 text-left transition-all duration-300 hover:border-white/10 hover:bg-white/5"
-                class:bg-white_10={selectedRegions.includes(region.code)}
-                class:border-white_20={selectedRegions.includes(region.code)}
                 onclick={() => toggleRegion(region.code)}
               >
                 <!-- Selection Glow -->
@@ -91,10 +91,10 @@
             {/snippet}
           </TooltipTrigger>
           <TooltipContent
-            side="right"
-            align="start"
-            class="z-50 ml-4 w-64 rounded-lg border border-white/10 bg-[#0a0a0f]/95 p-4 shadow-xl backdrop-blur-xl"
             style="border-color: {region.color}40; box-shadow: 0 0 30px -10px {region.color}20"
+            class="z-50 ml-4 w-64 rounded-lg border border-white/10 bg-[#0a0a0f]/95 p-4 shadow-xl backdrop-blur-xl"
+            align="start"
+            side="right"
           >
             <div class="mb-3 flex items-center gap-2 border-b border-white/10 pb-2">
               <span class="text-2xl">{region.flag}</span>

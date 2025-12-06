@@ -10,7 +10,7 @@
   let offset = new Tween(0, { duration: 1000, easing: cubicOut })
 
   $effect(() => {
-    if (page.params.processId) {
+    if (page.params.storeId) {
       offset.set(1000)
     } else {
       offset.set(0)
