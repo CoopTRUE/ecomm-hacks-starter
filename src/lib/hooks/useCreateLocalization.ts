@@ -13,7 +13,7 @@ export function useCreateLocalization(storeId: string) {
     },
     onSuccess: () => {
       invalidateAll()
-      queryClient.invalidateQueries({ queryKey: ['job', storeId] })
+      queryClient.invalidateQueries()
     },
   }))
 }

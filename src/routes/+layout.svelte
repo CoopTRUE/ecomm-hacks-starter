@@ -2,10 +2,10 @@
   import './layout.css'
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
   import favicon from '$lib/assets/favicon.svg'
-  import { ModeWatcher } from 'mode-watcher'
   import { Toaster } from '$lib/components/ui/sonner'
-  import { toast } from 'svelte-sonner'
   import { AxiosError } from 'axios'
+  import { ModeWatcher } from 'mode-watcher'
+  import { toast } from 'svelte-sonner'
 
   let { children } = $props()
 

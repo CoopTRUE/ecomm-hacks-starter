@@ -1,6 +1,7 @@
 import { geminiImageModel, geminiTextModel } from './gemini'
 import { type CountryCode, prisma, type StoreInformation, StoreStatus } from './prisma'
 import { EXTRACTION_PROMPT, IMAGE_GENERATION_PROMPT } from '$lib/constants'
+import { REGIONS } from '$lib/regions'
 
 function bufferToInlineData(buffer: Uint8Array, mimeType = 'image/jpeg') {
   return {
@@ -55,8 +56,11 @@ export async function localizeImages(
   const imageParts = images.map((image) => bufferToInlineData(image))
   console.log('CREATED', imageParts.length, 'IMAGE PARTS')
 
+  const regionData = REGIONS.find((r) => r.code === region)
+  const requirements = regionData?.requirements || []
+
   const { response } = await geminiImageModel.generateContent([
-    IMAGE_GENERATION_PROMPT(region),
+    IMAGE_GENERATION_PROMPT(region, requirements),
     ...imageParts,
   ])
   console.log('GENERATED IMAGE PARTS')
@@ -67,20 +71,31 @@ export async function localizeImages(
     if (!data) continue
     files.push(Buffer.from(data, 'base64'))
   }
+  await prisma.storeInformation.update({
+    where: { id: storeId },
+    data: { status: StoreStatus.LOCALIZING_TEXT },
+  })
   const localizedProductImageParts = files.map((file) => bufferToInlineData(file))
   console.log('GENERATED LOCALIZED PRODUCT IMAGE PARTS')
-  // const { response: extractionResponse } = await geminiTextModel.generateContent([
-  //   EXTRACTION_PROMPT,
-  //   ...localizedProductImageParts,
-  // ])
-  // console.log('GENERATED EXTRACTION RESPONSE', extractionResponse.text())
-  // const extractedTexts = JSON.parse(extractionResponse.text())
+  let extractedTexts: string[] = []
+  try {
+    const { response: extractionResponse } = await geminiTextModel.generateContent([
+      EXTRACTION_PROMPT,
+      ...localizedProductImageParts,
+    ])
+    console.log('GENERATED EXTRACTION RESPONSE', extractionResponse.text())
+    JSON.parse(extractionResponse.text())
+    extractedTexts.push(extractionResponse.text())
+  } catch (e) {
+    console.error('Error in extractTexts:', e)
+    extractedTexts = []
+  }
   await prisma.localizedVariant.create({
     data: {
       storeInformationId: storeId,
       region,
       generatedImages: files.map((file) => new Uint8Array(file)),
-      localizedText: [],
+      localizedText: extractedTexts,
     },
   })
 }

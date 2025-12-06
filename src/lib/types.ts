@@ -1,3 +1,5 @@
+import type { LocalizedVariant, StoreInformation } from '$lib/server/prisma'
+
 export interface GeoJsonProperties {
   scalerank: number
   featurecla: string
@@ -89,4 +91,11 @@ export interface GeoJsonFeatureCollection {
   type: 'FeatureCollection'
   features: GeoJsonFeature[]
   bbox: number[]
+}
+
+export type StoreDetails = Omit<StoreInformation, 'images' | 'variants'> & {
+  images: (string | null)[] // base64
+  variants: (Omit<LocalizedVariant, 'generatedImages'> & {
+    generatedImages: (string | null)[] // base64
+  })[]
 }
