@@ -67,9 +67,8 @@ model LocalizedVariant {
 
   region        CountryCode
 
-  // Generated content
-  localizedText  Json?
-  generatedImage Bytes?
+  localizedText  String[]
+  generatedImages Bytes[]
 
   status        LocalizationStatus @default(GENERATING)
 

@@ -9,5 +9,6 @@
     "source.fixAll.eslint": "always"
   },
   "eslint.validate": ["svelte", "typescript", "javascript"],
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

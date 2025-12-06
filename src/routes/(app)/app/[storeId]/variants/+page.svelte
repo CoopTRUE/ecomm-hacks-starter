@@ -8,7 +8,8 @@
   import { fade, fly } from 'svelte/transition'
 
   const storeId = page.params.storeId!
-  const jobStatus = useJob(storeId)
+  const job = useJob(storeId)
+  const jobStatus = $derived(job.data?.status ?? 'PENDING')
 
   // Status mapping for text content
   const statusContent: Record<string, { title: string; desc: string; step: number }> = {
@@ -53,7 +54,7 @@
   function handleContinue() {
     // In a real app, this might navigate to the results or dashboard
     // For now, we'll just reload or go back to store home
-    goto(`/app/${storeId}`)
+    alert('Not implemented')
   }
 </script>
 
@@ -76,7 +77,7 @@
         out:fade={{ duration: 200 }}
       >
         <!-- Icon / Progress Indicator -->
-        {#if jobStatus === 'LOCALIZED'}
+        {#if jobStatus === 'LOCALIZING'}
           <div
             class="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/20"
           >
@@ -93,7 +94,7 @@
               xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12" /></svg
             >
           </div>
-        {:else if jobStatus === 'FAILED'}
+        {:else if jobStatus === 'LOCALIZATION_FAILED'}
           <div
             class="flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 text-destructive ring-1 ring-destructive/20"
           >
@@ -132,7 +133,7 @@
         <!-- Text Content -->
         <div class="space-y-2">
           <h1 class="font-serif text-4xl font-medium tracking-tight sm:text-5xl">
-            {currentContent.title}{#if jobStatus !== 'LOCALIZED' && jobStatus !== 'FAILED'}<span
+            {currentContent.title}{#if jobStatus !== 'LOCALIZED' && jobStatus !== 'LOCALIZATION_FAILED'}<span
                 class="inline-block w-[1ch] text-left">{dots}</span
               >{/if}
           </h1>
@@ -144,7 +145,7 @@
     {/key}
 
     <!-- Progress Bar (Fake or Real based on steps) -->
-    {#if jobStatus !== 'LOCALIZED' && jobStatus !== 'FAILED'}
+    {#if jobStatus !== 'LOCALIZED' && jobStatus !== 'LOCALIZATION_FAILED'}
       <div class="mt-12 w-full max-w-xs" in:fade={{ delay: 400 }}>
         <div class="relative h-1 w-full overflow-hidden rounded-full bg-muted">
           <div
@@ -164,7 +165,7 @@
     {/if}
 
     <!-- Result Action -->
-    {#if jobStatus === 'LOCALIZED'}
+    {#if jobStatus === 'LOCALIZING'}
       <div class="mt-10" in:fly={{ y: 10, delay: 500 }}>
         <Button
           class="min-w-[200px] animate-in duration-500 fade-in zoom-in"
@@ -174,7 +175,7 @@
           View Localized Store
         </Button>
       </div>
-    {:else if jobStatus === 'FAILED'}
+    {:else if jobStatus === 'LOCALIZATION_FAILED'}
       <div class="mt-10" in:fly={{ y: 10, delay: 500 }}>
         <Button onclick={() => location.reload()} size="lg" variant="outline">Retry</Button>
       </div>
